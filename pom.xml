@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <jportal.version>1.0</jportal.version>
+        <jportal.version>1.0.0-SNAPSHOT</jportal.version>
     </properties>
 
     <dependencies>
@@ -42,11 +42,6 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.python</groupId>
-            <artifactId>jython-standalone</artifactId>
-            <version>2.5.2</version>
         </dependency>
         <dependency>
             <groupId>za.co.bbd</groupId>

@@ -1,129 +1,64 @@
 package co.za.bbd.servicebus;
 
+import bbd.jportal2.JPortal2Arguments;
+import bbd.jportal2.ProjectCompiler;
+import bbd.jportal2.ProjectCompilerBuilder;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 @Mojo(name = "jportal", defaultPhase = LifecyclePhase.GENERATE_RESOURCES)
 public class JportalPlugin
         extends AbstractMojo {
-    public JportalPlugin() {
-    }
 
-    public JportalPlugin(String sourcePath, String buildPath, String jportalPath,
-                         String projectFile) {
+    private static final Logger logger = LoggerFactory.getLogger(JportalPlugin.class);
+    
+    public JportalPlugin(String sourcePath, List<String> generators) {
         this.sourcePath = sourcePath;
-        this.buildPath = buildPath;
-        this.jportalPath = jportalPath;
-        this.projectFile = projectFile;
-        anyDbPathPostfix = ""; //For testing
+        this.generators = generators;
     } //For testing purposes, this won't actually be called by Maven
 
     @Parameter(property = "jportal.sourcePath", required = true)
     private String sourcePath;
 
-    @Parameter(property = "jportal.buildPath", required = true)
-    private String buildPath;
+    @Parameter(property = "jportal.generators", required = true)
+    private List<String> generators;
 
-    @Parameter(property = "jportal.jportalPath", required = true)
-    private String jportalPath;
+    @Parameter(property = "jportal.compilerFlags")
+    private List<String> compilerFlags = Collections.emptyList();
 
-    @Parameter(property = "jportal.projectFile", required = true)
-    private String projectFile;
+    @Parameter(property = "jportal.additionalArguments")
+    private String additionalArguments;
 
-    private String anyDbPathPostfix = "scripts/anydb/";
-    //TODO: Change to maven dependency folder
-    private String effectiveProjectFilePath;
-
-    //TODO:This will become useless when we have an artifact repository
-    private void copyResource(String resourceName, String path) throws IOException {
-        URL inputUrl = getClass().getResource("/" + resourceName);
-        File dest = new File(path + resourceName);
-
-        FileUtils.copyURLToFile(inputUrl, dest);
-    }
-
-    private String inQuotes(String val) {
-        return "\"" + val + "\"";
-    }
-
-    public String generateEffectiveAnyDBProjectFile(String projPath, String srcPath, String bldPath,
-                                                    String outPath) throws IOException {
-        String content = FileUtils.fileRead(new File(projPath));
-        String replaced = content.replace("${sourcePath}", srcPath);
-        replaced = replaced.replace("${buildPath}", bldPath);
-        String effectivePath = outPath + "effectiveAnyDBProject.xml";
-        File file = new File(effectivePath);
-        file.getParentFile().mkdirs();
-        FileUtils.fileWrite(effectivePath, replaced);
-        return effectivePath;
-    }
 
     public void execute() throws MojoExecutionException {
-        try {
-            effectiveProjectFilePath = generateEffectiveAnyDBProjectFile(projectFile, sourcePath,
-                    buildPath, buildPath + anyDbPathPostfix);
-        } catch (IOException e) {
-            getLog().error("Could not generate effective project file.");
-            throw new MojoExecutionException(e.getMessage());
-        }
-
-        String[] arguments = new String[]{
-                "python",
-                buildPath + anyDbPathPostfix + "anydbMake.py",
-                "--buildPath",
-                inQuotes(buildPath),
-                "--sourcePath",
-                inQuotes(sourcePath),
-                "--jportal",
-                inQuotes(jportalPath),
-                "--verbose",
-                effectiveProjectFilePath
-        };
-
-        getLog().info("Configured AnyDB Python with arguments:");
-        for (String arg : arguments) {
-            getLog().info(arg);
-        }
 
         try {
-            if (!new File(buildPath + anyDbPathPostfix + "anydbMake.py").exists())
-                copyResource("anydbMake.py", buildPath + anyDbPathPostfix);
-        } catch (IOException e) {
-            throw new MojoExecutionException(e.getMessage());
-        }
 
-        try {
-            ProcessBuilder pb = new ProcessBuilder(arguments);
-            Process p = pb.start();
-            getLog().info("Running AnyDB Python: ");
-            BufferedReader bfr = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line = "";
-            line = bfr.readLine();
-            getLog().info(line);
-            while ((line = bfr.readLine()) != null) {
-                getLog().info(line);
-            }
+            JPortal2Arguments arguments = new JPortal2Arguments();
+            arguments.setInputDirs(Collections.singletonList(sourcePath));
+            arguments.setFlags(compilerFlags);
+            arguments.setBuiltinSIProcessors(generators);
 
-            int exitCode = p.waitFor();
-            if (exitCode != 0) {
-                throw new MojoExecutionException("JPortal Build Unsuccessful.");
-            }
+            logger.info("JPortal2 is configured with the following arguments:");
+            logger.info(arguments.toString());
 
-            getLog().info("Exit Code : " + exitCode);
+            ProjectCompiler pj = ProjectCompilerBuilder.build(arguments, additionalArguments);
 
-            p.destroy();
+            logger.info("JPortal2 generating sources...");
+            pj.compileAll();
+            logger.info("JPortal2 completed successfully");
+
+
         } catch (Exception e) {
-            throw new MojoExecutionException(e.getMessage());
+            throw new MojoExecutionException("JPortal2 compilation unsuccessful", e);
         }
     }
 }
