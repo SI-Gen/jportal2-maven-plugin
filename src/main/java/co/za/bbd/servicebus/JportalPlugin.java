@@ -18,8 +18,10 @@ import java.util.List;
 public class JportalPlugin
         extends AbstractMojo {
 
+    public JportalPlugin() {}
+
     private static final Logger logger = LoggerFactory.getLogger(JportalPlugin.class);
-    
+
     public JportalPlugin(String sourcePath, List<String> generators) {
         this.sourcePath = sourcePath;
         this.generators = generators;
