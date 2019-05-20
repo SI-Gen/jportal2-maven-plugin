@@ -18,7 +18,8 @@ import java.util.List;
 public class JportalPlugin
         extends AbstractMojo {
 
-    public JportalPlugin() {}
+    public JportalPlugin() {
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(JportalPlugin.class);
 
@@ -50,7 +51,10 @@ public class JportalPlugin
             arguments.setBuiltinSIProcessors(generators);
 
             logger.info("JPortal2 is configured with the following arguments:");
-            logger.info(arguments.toString());
+
+            if (logger.isInfoEnabled()) {
+                logger.info(arguments.toString());
+            }
 
             ProjectCompiler pj = ProjectCompilerBuilder.build(arguments, additionalArguments);
 
