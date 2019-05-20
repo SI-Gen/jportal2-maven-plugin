@@ -1,12 +1,37 @@
-target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
 release.properties
-dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
 !/.mvn/wrapper/maven-wrapper.jar
+
+
+# vscode
+.vscode/
+.settings/
+.project
+.classpath
+
+# Mac
+.DS_Store
+
+#Maven
+target/
+/build/
+
+dependency-reduced-pom.xml
+config_developer.yml
+debug.properties
+
+# IntelliJ
+/out/
+.idea/
+*.iml
+*.iws
+
+# Python
+venv

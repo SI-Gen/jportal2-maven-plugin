@@ -1,0 +1,22 @@
+///
+/// Name:Template.si
+///
+DATABASE servicebus
+PACKAGE  co.za.bbd.servicebus.db.entities
+OUTPUT   Template
+SERVER   PostgeSQL95
+
+Table Template options "autoincrement:1 1"
+  ID                            SEQUENCE
+  Description                   CHAR(100)
+  UsrID                         CHAR(48)
+  TMStamp                       TIMESTAMP
+
+KEY PKEY PRIMARY ID
+
+PROC Insert
+PROC SelectOne
+
+SQLDATA
+-- Takeons come here
+
