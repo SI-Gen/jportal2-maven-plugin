@@ -8,7 +8,7 @@ jobs:
   displayName: Build and Publish Release
   variables:
     - group: JPortal2SensitiveVariables
-  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')) 
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
   pool:
     vmImage: 'Ubuntu-16.04'
   steps:
@@ -22,7 +22,7 @@ jobs:
       echo "##vso[task.setvariable variable=project_version]$extracted_version"
       echo "Git tag version: $extracted_version"
     displayName: 'Extract version from Git tag'
-    failOnStderr: true  
+    failOnStderr: true
   - bash: |
       echo "Validating format of tagged version..."
       echo "$PROJECT_VERSION" | grep -P "^[1-9]\d*?\.\d+?.\d+?$"
@@ -37,7 +37,7 @@ jobs:
   - template: templates/maven.yml
     parameters:
       displayName: 'Maven create release version'
-      goals: | 
+      goals: |
         -Pcreate-release-version  -DreleaseVersion=$(project_version) clean validate
   - template: templates/maven.yml
     parameters:
@@ -47,10 +47,10 @@ jobs:
   - task: GitHubRelease@0
     inputs:
       gitHubConnection: github-si-gen
-      repositoryName: '$(Build.Repository.Name)' 
+      repositoryName: '$(Build.Repository.Name)'
       action: 'create'
       target: '$(Build.SourceVersion)'
       tagSource: 'auto'
-      title: JPortal2 v$(project_version)
-      assets: 'target/jportal2*.jar'
+      title: JPortal2 Maven Plugin v$(project_version)
+      assets: 'target/jportal2-maven-plugin*.jar'
     displayName: 'Create GitHub release'
