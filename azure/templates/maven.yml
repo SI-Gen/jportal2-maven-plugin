@@ -1,20 +1,16 @@
-trigger:
-  branches:
-    include:
-      - feature/*
-      - hotfix/*
-
-pool:
-  vmImage: 'ubuntu-latest'
+parameters:
+    displayName: 'Maven verify'
+    goals: 'clean verify'
 
 steps:
 - task: Maven@3
+  displayName: ${{ parameters.displayName }}
   inputs:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.8'
     jdkArchitectureOption: 'x64'
-    publishJUnitResults: false
+    publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
-    goals: 'verify'
+    goals: ${{ parameters.goals }}
