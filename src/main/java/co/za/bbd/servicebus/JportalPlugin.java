@@ -39,7 +39,6 @@ public class JportalPlugin
     @Parameter(property = "jportal.additionalArguments")
     private String additionalArguments;
 
-
     public void execute() throws MojoExecutionException {
 
         try {
@@ -50,14 +49,13 @@ public class JportalPlugin
             arguments.setBuiltinSIProcessors(generators);
 
             logger.info("JPortal2 is configured with the following arguments:");
-            logger.info(arguments.toString());
+            logger.info("{}", arguments);
 
             ProjectCompiler pj = ProjectCompilerBuilder.build(arguments, additionalArguments);
 
             logger.info("JPortal2 generating sources...");
             pj.compileAll();
             logger.info("JPortal2 completed successfully");
-
 
         } catch (Exception e) {
             throw new MojoExecutionException("JPortal2 compilation unsuccessful", e);
