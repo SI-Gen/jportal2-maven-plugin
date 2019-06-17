@@ -120,6 +120,7 @@
             <groupId>za.co.bbd</groupId>
             <artifactId>jportal2</artifactId>
             <version>${jportal2.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
