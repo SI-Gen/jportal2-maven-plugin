@@ -1,7 +1,7 @@
 # JPortal2 Maven Plugin
 Maven plugin for [JPortal2](https://github.com/SI-Gen/jportal2)
 
-##Example Usage
+## Example Usage
 ```xml
 <build>
     <plugins>
