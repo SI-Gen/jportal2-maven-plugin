@@ -86,7 +86,7 @@
         </developer>
     </developers>
 
-    <name>JPortal2</name>
+    <name>JPortal2 Maven Plugin</name>
     <url>https://github.com/SI-Gen/jportal2-maven-plugin</url>
 
     <dependencies>
